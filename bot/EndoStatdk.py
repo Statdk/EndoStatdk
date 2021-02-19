@@ -1,19 +1,25 @@
-import random
-import time
-import string
+#!/usr/bin/env python
+
 import json
+import random
+import string
+import time
+from datetime import datetime
+from os import path
 
 import discord
 import youtube_dl
-
 from discord.ext import commands
 
-from datetime import datetime
+if path.exists('config.json'):
+    with open('config.json') as f:
+        CONFIG = json.load(f)
+        f.close()
+else:
+    with open('/home/pi/Desktop/config.json') as f:
+        CONFIG = json.load(f)
+        f.close()
 
-
-with open('/home/pi/Desktop/config.json') as f:
-    CONFIG = json.load(f)
-    f.close()
 
 client = commands.Bot(command_prefix = '.')
 logChannel =  722277448934359073
@@ -293,10 +299,10 @@ class Music(commands.Cog):
     @commands.command()
     async def pause(self, ctx):
         """Pauses and unpauses the player"""
-        if is_paused():
-            resume()
+        if client.is_paused():
+            client.resume()
         else:
-            pause()
+            client.pause()
 
     @commands.command()
     async def stop(self, ctx):
