@@ -11,8 +11,8 @@ import discord
 import youtube_dl
 from discord.ext import commands
 
-if path.exists('config.json'):
-    with open('config.json') as f:
+if path.exists('./bot/config.json'):
+    with open('./bot/config.json') as f:
         CONFIG = json.load(f)
         f.close()
 else:
