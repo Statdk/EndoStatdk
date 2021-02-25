@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+import asyncio
 import json
 import random
 import string
@@ -9,6 +8,7 @@ from os import path
 
 import discord
 import youtube_dl
+from discord import player
 from discord.ext import commands
 
 if path.exists('./bot/config.json'):
@@ -21,13 +21,15 @@ else:
         f.close()
 
 
-client = commands.Bot(command_prefix = '.')
-logChannel =  722277448934359073
+client = commands.Bot(command_prefix='.')
+logChannel = 722277448934359073
 vol = 20
 
-#Methods/Functions______________________________________________________________
+# Methods/Functions______________________________________________________________
 
-#outputs True if 'f' is a number
+# outputs True if 'f' is a number
+
+
 def testNumber(arg):
     try:
         x = float(arg)
@@ -35,25 +37,30 @@ def testNumber(arg):
         return False
     return True
 
+
 async def log(arg):
     await client.get_channel(logChannel).send(f'Error:\n{arg}\n{datetime.now()}\n...')
 
-#Events_________________________________________________________________________
+# Events_________________________________________________________________________
+
 
 @client.event
 async def on_ready():
-    print(f"Logged in as\n{client.user.name}\n{client.user.id}\n{datetime.now()}\n...")
+    print(
+        f"Logged in as\n{client.user.name}\n{client.user.id}\n{datetime.now()}\n...")
     await client.get_channel(logChannel).send(f'Logged in as\n{client.user.name}\n{client.user.id}\n{datetime.now()}\n...')
-    await client.change_presence(activity = discord.Activity(name="", type=4))
+    await client.change_presence(activity=discord.Activity(name="", type=4))
 
-#Commands_______________________________________________________________________
+# Commands_______________________________________________________________________
+
 
 @client.command()
 async def ping(ctx):
     await ctx.send(f'Pong! `{round(client.latency * 1000)}ms`')
 
+
 @client.command(aliases=['8ball'])
-async def _8ball(ctx, *, question = None):
+async def _8ball(ctx, *, question=None):
     """Ask the 8ball a question"""
     if question == None:
         await ctx.send(f"Command syntax: `.8ball [question]`")
@@ -61,46 +68,48 @@ async def _8ball(ctx, *, question = None):
         await ctx.send(f"You imbecil! {question} is a number!")
     else:
         responses = ["It is certain.",
-                    "It is decidedly so.",
-                    "Without a doubt.",
-                    "Yes - definitely.",
-                    "You may rely on it.",
-                    "As I see it, yes.",
-                    "Most likely.",
-                    "Outlook good.",
-                    "Yes.",
-                    "Signs point to yes.",
-                    "Reply hazy, try again.",
-                    "Ask again later.",
-                    "Better not tell you now.",
-                    "Cannot predict now.",
-                    "Concentrate and ask again.",
-                    "Don't count on it.",
-                    "My reply is no.",
-                    "My sources say no.",
-                    "Outlook not so good.",
-                    "Very doubtful."]
+                     "It is decidedly so.",
+                     "Without a doubt.",
+                     "Yes - definitely.",
+                     "You may rely on it.",
+                     "As I see it, yes.",
+                     "Most likely.",
+                     "Outlook good.",
+                     "Yes.",
+                     "Signs point to yes.",
+                     "Reply hazy, try again.",
+                     "Ask again later.",
+                     "Better not tell you now.",
+                     "Cannot predict now.",
+                     "Concentrate and ask again.",
+                     "Don't count on it.",
+                     "My reply is no.",
+                     "My sources say no.",
+                     "Outlook not so good.",
+                     "Very doubtful."]
         await ctx.send(f"{random.choice(responses)}")
+
 
 @client.command(aliases=['purge', 'prune', 'delete', 'del'])
 @commands.has_permissions(manage_messages=True)
-async def clear(ctx, *, amount = ""):
+async def clear(ctx, *, amount=""):
     """Clears a number of messages"""
     if amount == "":
-        await ctx.channel.purge(limit = 1)
-        await ctx.send("Command syntax: `.delete <number of messages>`", delete_after = 3)
+        await ctx.channel.purge(limit=1)
+        await ctx.send("Command syntax: `.delete <number of messages>`", delete_after=3)
     elif not testNumber(amount):
-        await ctx.channel.purge(limit = 1)
-        await ctx.send("That's not a number...", delete_after = 3)
+        await ctx.channel.purge(limit=1)
+        await ctx.send("That's not a number...", delete_after=3)
     else:
         await ctx.channel.purge(limit=int(amount) + 1)
         log(f"Deleted {amount} messages in {ctx.get_channel}")
 
+
 @client.command(aliases=['random'])
-async def rand(ctx, *, args = "0 100 1"):
-    ##Arguments are: Minimum, Maximum, and Amount
+async def rand(ctx, *, args="0 100 1"):
+    # Arguments are: Minimum, Maximum, and Amount
     args = args.split()
-    
+
     tosend = ""
     try:
         for i in range(int(args[2])):
@@ -112,12 +121,14 @@ async def rand(ctx, *, args = "0 100 1"):
 
     await ctx.send(tosend)
 
+
 @client.command(aliases=['addition', 'ad'])
 async def add(ctx, a, b):
     if testNumber(a) and testNumber(b):
         await ctx.send(float(a) + float(b))
     else:
         await ctx.send('Command syntax:: `.add [first] [second]`')
+
 
 @client.command(aliases=['subtraction', 'sub'])
 async def subtract(ctx, a, b):
@@ -126,12 +137,14 @@ async def subtract(ctx, a, b):
     else:
         await ctx.send('Command syntax:: `.subtract [first] [second]`')
 
+
 @client.command(aliases=['multiplication', 'mult'])
 async def multiply(ctx, a, b):
     if testNumber(a) and testNumber(b):
         await ctx.send(float(a) * float(b))
     else:
         await ctx.send('Command syntax:: `.multiply [first] [second]`')
+
 
 @client.command(aliases=['division', 'div'])
 async def divide(ctx, a, b):
@@ -140,12 +153,13 @@ async def divide(ctx, a, b):
     else:
         await ctx.send('Command syntax:: `.divide [first] [second]`')
 
+
 @client.command()
 async def math(ctx, *, arg):
     """Performs simple math operations from left to right"""
     arg = arg.split()
     ans = float(arg[0])
-    
+
     args = 0
     f = 0
     for i in arg:
@@ -171,21 +185,23 @@ async def math(ctx, *, arg):
 
     await ctx.send(f"Result: {ans}")
 
+
 @client.command()
 @commands.has_permissions(manage_messages=True)
 async def shutdown(ctx):
     await ctx.send(f"Shutting down\n{datetime.now()}")
     exit()
 
+
 @client.command()
-async def status(ctx, text = None, type = 1):
+async def status(ctx, text=None, type=1):
     if text == None:
-        await client.change_presence(activity = discord.Activity(name="", type=4))
+        await client.change_presence(activity=discord.Activity(name="", type=4))
         return
-    await client.change_presence(activity = discord.Activity(name=text, type=type))
+    await client.change_presence(activity=discord.Activity(name=text, type=type))
 
 
-##MUSIC_________________________________________________________________________________
+# MUSIC_________________________________________________________________________________
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -202,7 +218,8 @@ ytdl_format_options = {
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+    # bind to ipv4 since ipv6 addresses cause issues sometimes
+    'source_address': '0.0.0.0'
 }
 
 ffmpeg_options = {
@@ -252,12 +269,13 @@ class Music(commands.Cog):
         """Plays a file from the local filesystem"""
 
         source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
-        ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+        ctx.voice_client.play(source, after=lambda e: print(
+            'Player error: %s' % e) if e else None)
 
         await ctx.send('Now playing: {}'.format(query))
 
         ctx.voice_client.source.volume = vol / 100
-        await client.change_presence(activity = discord.Activity(name=player.title, type=2))
+        await client.change_presence(activity=discord.Activity(name=player.title, type=2))
 
     @commands.command()
     async def yt(self, ctx, *, url):
@@ -265,12 +283,13 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
-            ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            ctx.voice_client.play(player, after=lambda e: print(
+                'Player error: %s' % e) if e else None)
 
         await ctx.send('Now playing: {}'.format(player.title))
 
         ctx.voice_client.source.volume = vol / 100
-        await client.change_presence(activity = discord.Activity(name=player.title, type=2))
+        await client.change_presence(activity=discord.Activity(name=player.title, type=2))
 
     @commands.command()
     async def stream(self, ctx, *, url):
@@ -278,14 +297,15 @@ class Music(commands.Cog):
 
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-            ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+            ctx.voice_client.play(player, after=lambda e: print(
+                'Player error: %s' % e) if e else None)
 
         await ctx.send('Now playing: {}'.format(player.title))
 
         ctx.voice_client.source.volume = vol / 100
-        await client.change_presence(activity = discord.Activity(name=player.title, type=2))
+        await client.change_presence(activity=discord.Activity(name=player.title, type=2))
 
-    @commands.command(aliases = ['vol', 'v'])
+    @commands.command(aliases=['vol', 'v'])
     async def volume(self, ctx, volume: int):
         """Changes the player's volume"""
         vol = volume
@@ -308,7 +328,7 @@ class Music(commands.Cog):
     async def stop(self, ctx):
         """Stops and disconnects the bot from voice"""
 
-        await client.change_presence(activity = discord.Activity(name="", type=4))
+        await client.change_presence(activity=discord.Activity(name="", type=4))
         await ctx.voice_client.disconnect()
 
     @play.before_invoke
@@ -320,9 +340,11 @@ class Music(commands.Cog):
                 await ctx.author.voice.channel.connect()
             else:
                 await ctx.send("You are not connected to a voice channel.")
-                raise commands.CommandError("Author not connected to a voice channel.")
+                raise commands.CommandError(
+                    "Author not connected to a voice channel.")
         elif ctx.voice_client.is_playing():
             ctx.voice_client.stop()
+
 
 client.add_cog(Music(client))
 client.run(CONFIG["token"])
