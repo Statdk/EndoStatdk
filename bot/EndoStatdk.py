@@ -59,12 +59,12 @@ async def on_ready():
 
 class Fun():
     @client.command(aliases=['8ball'])
-    async def _8ball(ctx, *, question=None):
+    async def _8ball(self, *, question=None):
         """Ask the 8ball a question"""
         if question == None:
-            await ctx.send(f"Command syntax: `.8ball [question]`")
+            await self.send(f"Command syntax: `.8ball [question]`")
         elif testNumber(question):
-            await ctx.send(f"You imbecil! {question} is a number!")
+            await self.send(f"You imbecil! {question} is a number!")
         else:
             responses = ["It is certain.",
                          "It is decidedly so.",
@@ -86,17 +86,17 @@ class Fun():
                          "My sources say no.",
                          "Outlook not so good.",
                          "Very doubtful."]
-            await ctx.send(f"{random.choice(responses)}")
+            await self.send(f"{random.choice(responses)}")
 
     @client.command()
-    async def status(ctx, text=None, type=1):
+    async def status(self, text=None, type=1):
         if text == None:
             await client.change_presence(activity=discord.Activity(name="", type=4))
             return
         await client.change_presence(activity=discord.Activity(name=text, type=type))
 
     @client.command(aliases=['random'])
-    async def rand(ctx, *, args="0 100 1"):
+    async def rand(self, *, args="0 100 1"):
         """Returns an amount of random numbers"""
         # Arguments are: Minimum, Maximum, and Amount
         args = args.split()
@@ -107,63 +107,63 @@ class Fun():
                 tosend += f"{random.choice(range(int(args[0]), int(args[1])))}\n"
         except Exception as e:
             await log(e)
-            await ctx.send("Command syntax: '.random <minimum> <maximum> <number of messages>'")
+            await self.send("Command syntax: '.random <minimum> <maximum> <number of messages>'")
             return
 
-        await ctx.send(tosend)
+        await self.send(tosend)
 
 
 class Moderation():
     @client.command(aliases=['purge', 'prune', 'delete', 'del'])
     @commands.has_permissions(manage_messages=True)
-    async def clear(ctx, *, amount=""):
+    async def clear(self, *, amount=""):
         """Clears a number of messages"""
         if amount == "":
-            await ctx.channel.purge(limit=1)
-            await ctx.send("Command syntax: `.delete <number of messages>`", delete_after=3)
+            await self.channel.purge(limit=1)
+            await self.send("Command syntax: `.delete <number of messages>`", delete_after=3)
         elif not testNumber(amount):
-            await ctx.channel.purge(limit=1)
-            await ctx.send("That's not a number...", delete_after=3)
+            await self.channel.purge(limit=1)
+            await self.send("That's not a number...", delete_after=3)
         else:
-            await ctx.channel.purge(limit=int(amount) + 1)
-            log(f"Deleted {amount} messages in {ctx.get_channel}")
+            await self.channel.purge(limit=int(amount) + 1)
+            log(f"Deleted {amount} messages in {self.get_channel}")
 
 
 class Math():
     @client.command(aliases=['addition', 'ad'])
-    async def add(self, ctx, a, b):
+    async def add(self, a, b):
         """Adds two numbers"""
         if testNumber(a) and testNumber(b):
-            await ctx.send(float(a) + float(b))
+            await self.send(float(a) + float(b))
         else:
-            await ctx.send('Command syntax:: `.add [first] [second]`')
+            await self.send('Command syntax:: `.add [first] [second]`')
 
     @client.command(aliases=['subtraction', 'sub'])
-    async def subtract(self, ctx, a, b):
+    async def subtract(self, a, b):
         """Subtracts two numbers"""
         if testNumber(a) and testNumber(b):
-            await ctx.send(float(a) - float(b))
+            await self.send(float(a) - float(b))
         else:
-            await ctx.send('Command syntax:: `.subtract [first] [second]`')
+            await self.send('Command syntax:: `.subtract [first] [second]`')
 
     @client.command(aliases=['multiplication', 'mult'])
-    async def multiply(self, ctx, a, b):
+    async def multiply(self, a, b):
         """Multiplies two numbers"""
         if testNumber(a) and testNumber(b):
-            await ctx.send(float(a) * float(b))
+            await self.send(float(a) * float(b))
         else:
-            await ctx.send('Command syntax:: `.multiply [first] [second]`')
+            await self.send('Command syntax:: `.multiply [first] [second]`')
 
     @client.command(aliases=['division', 'div'])
-    async def divide(self, ctx, a, b):
+    async def divide(self, a, b):
         """Divides two numbers"""
         if testNumber(a) and testNumber(b):
-            await ctx.send(float(a) / float(b))
+            await self.send(float(a) / float(b))
         else:
-            await ctx.send('Command syntax:: `.divide [first] [second]`')
+            await self.send('Command syntax:: `.divide [first] [second]`')
 
     @client.command()
-    async def math(self, ctx, *, arg):
+    async def math(self, *, arg):
         """Performs simple math operations from left to right"""
         arg = arg.split()
         ans = float(arg[0])
@@ -187,22 +187,22 @@ class Math():
                     ans /= float(arg[f])
                     args += 1
             except Exception as e:
-                await ctx.send(e)
-                await ctx.send("Command syntax:: `.math a operator b operator c ...`")
+                await self.send(e)
+                await self.send("Command syntax:: `.math a operator b operator c ...`")
                 return
 
-        await ctx.send(f"Result: {ans}")
+        await self.send(f"Result: {ans}")
 
 
 class Misc():
     @client.command()
-    async def ping(ctx):
-        await ctx.send(f'Pong! `{round(client.latency * 1000)}ms`')
+    async def ping(self):
+        await self.send(f'Pong! `{round(client.latency * 1000)}ms`')
 
     @client.command()
     @commands.has_permissions(manage_messages=True)
-    async def shutdown(ctx):
-        await ctx.send(f"Shutting down\n{datetime.now()}")
+    async def shutdown(self):
+        await self.send(f"Shutting down\n{datetime.now()}")
         exit()
 
 # endregion
