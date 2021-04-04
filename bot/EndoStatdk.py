@@ -194,7 +194,7 @@ class Math():
         await self.send(f"Result: {ans}")
 
 
-class Misc():
+class Management():
     @client.command()
     async def ping(self):
         await self.send(f'Pong! `{round(client.latency * 1000)}ms`')
@@ -203,7 +203,20 @@ class Misc():
     @commands.has_permissions(manage_messages=True)
     async def shutdown(self):
         await self.send(f"Shutting down\n{datetime.now()}")
+        client.logout()
         exit()
+
+    @client.command()
+    async def say(self, channel_id, message):
+        try:
+            if (client.is_owner(self.author)):
+                toSend = client.get_channel(int(channel_id))
+                await toSend.send(str(message))
+
+        except Exception as e:
+            await log(e)
+
+        await self.message.delete()
 
 # endregion
 
